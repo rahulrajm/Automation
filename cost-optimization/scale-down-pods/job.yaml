@@ -1,0 +1,22 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: scaledown
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: scaledown
+            image: <image-name>
+            env:
+            - name: EXCLUDE_NAMESPACES
+              value: kube-system,default
+            - name: EXCLUDE_DEPLOYMENTS
+              value: kube-dns,metrics-server
+            command: ["/bin/bash"]
+            args: ["-c", "/scaledown.sh $EXCLUDE_NAMESPACES $EXCLUDE_DEPLOYMENTS"]
+          restartPolicy: Never
+
